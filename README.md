@@ -10,6 +10,8 @@ MovieApp/
 │   └── MovieApp.swift
 │
 ├── Core/
+│   ├── DependencyInjection/
+│   │   └── DependencyContainer.swift
 │   ├── Network/
 │   │   └── NetworkManager.swift
 │   ├── Storage/
