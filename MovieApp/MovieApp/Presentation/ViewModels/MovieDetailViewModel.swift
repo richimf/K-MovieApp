@@ -19,7 +19,7 @@ class MovieDetailViewModel: ObservableObject {
         self.fetchMovieDetailUseCase = fetchMovieDetailUseCase
     }
 
-    func fetchMovieDetail(movieID: Int, language: APILanguage = .EN) {
+    func fetchMovieDetail(movieID: Int, language: APILanguage = LanguageUtility.getDeviceAPILanguage()) {
         isLoading = true
         errorMessage = nil
 

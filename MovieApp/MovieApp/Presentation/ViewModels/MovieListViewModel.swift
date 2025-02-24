@@ -29,7 +29,7 @@ class MovieListViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        fetchMoviesUseCase.execute(page: currentPage, language: .EN) { [weak self] result in
+        fetchMoviesUseCase.execute(page: currentPage, language: LanguageUtility.getDeviceAPILanguage()) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 self.isLoading = false
@@ -51,7 +51,7 @@ class MovieListViewModel: ObservableObject {
         isPaginating = true
         currentPage += 1
 
-        fetchMoviesUseCase.execute(page: currentPage, language: .EN) { [weak self] result in
+        fetchMoviesUseCase.execute(page: currentPage, language: LanguageUtility.getDeviceAPILanguage()) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 self.isPaginating = false

@@ -59,7 +59,7 @@ struct MovieListView: View {
                             }
                         )
                     } else if currentMovies.isEmpty {
-                        // MARK: - No Movies Found View
+                    // MARK: - No Movies Found View
                         VStack {
                             Spacer()
                             Image(systemName: "film")
