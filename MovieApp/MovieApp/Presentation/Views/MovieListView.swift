@@ -4,6 +4,7 @@
 //
 //  Created by Ricardo Montesinos on 23/02/25.
 //
+
 import SwiftUI
 
 struct MovieListView: View {
@@ -27,7 +28,7 @@ struct MovieListView: View {
                             .onChange(of: searchText) { newValue in
                                 handleSearchInput(newValue)
                             }
-                        
+
                         if isSearching {
                             Button("Cancel") {
                                 cancelSearch()
@@ -38,6 +39,7 @@ struct MovieListView: View {
                     }
                     .padding(.top, 10)
                 }
+
                 // MARK: - Movie List
                 Group {
                     if viewModel.isLoading || searchViewModel.isLoading {
@@ -54,6 +56,22 @@ struct MovieListView: View {
                                 }
                             }
                         )
+                    } else if currentMovies.isEmpty {
+                        // MARK: - No Movies Found View
+                        VStack {
+                            Spacer()
+                            Image(systemName: "film")
+                                .resizable()
+                                .frame(width: 80, height: 80)
+                                .foregroundColor(.gray)
+                                .padding(.bottom, 20)
+
+                            Text("No Movies Found")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                                .bold()
+                            Spacer()
+                        }
                     } else {
                         List(currentMovies.indices, id: \.self) { index in
                             let movie = currentMovies[index]
@@ -134,10 +152,10 @@ struct MovieListView: View {
             searchViewModel.loadMoreSearchResults(query: searchText)
         }
     }
-    
+
     // MARK: - Check for Offline Error
     private var isOfflineError: Bool {
         let errorMessage = viewModel.errorMessage ?? searchViewModel.errorMessage ?? ""
-        return errorMessage.contains("offline") || errorMessage.contains("No Internet")
+        return errorMessage.lowercased().contains("offline") || errorMessage.lowercased().contains("no internet")
     }
 }
