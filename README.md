@@ -51,3 +51,15 @@ MovieApp/
     ├── Assets.xcassets
     └── Localizable.strings
 ```
+
+### Feature board
+
+Every feature is listed here as Todo, In Progress or Done.
+Each ticket has a prefix that stands the following:
+
+- [ARCH] Architecture
+- [FEAT] Feature
+- [UI] UI Feature
+- [API] API implementation
+
+https://github.com/users/richimf/projects/1/views/1

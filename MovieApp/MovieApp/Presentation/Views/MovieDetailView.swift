@@ -79,7 +79,7 @@ struct MovieDetailView: View {
 
     // MARK: - Dynamic Navigation Title
     private var navigationTitle: String {
-        if let errorMessage = viewModel.errorMessage, isOfflineError {
+        if let _ = viewModel.errorMessage, isOfflineError {
             return "No Internet Connection"
         } else if let movieTitle = viewModel.movie?.title {
             return movieTitle
