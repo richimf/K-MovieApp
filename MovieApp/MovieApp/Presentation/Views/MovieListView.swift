@@ -10,20 +10,22 @@ struct MovieListView: View {
 
     @StateObject var viewModel: MovieListViewModel
     @StateObject var searchViewModel = DependencyContainer.shared.makeMovieSearchViewModel()
-        
+
     @State private var searchText: String = ""
     @State private var isSearching: Bool = false
+    @State private var didPerformRemoteSearch: Bool = false
 
     var body: some View {
         NavigationView {
             VStack {
                 // MARK: - Search Bar
                 HStack {
-                    TextField("Search Movies...", text: $searchText, onCommit: {
-                        performSearch()
-                    })
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
+                    TextField("Search Movies...", text: $searchText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                        .onChange(of: searchText) { newValue in
+                            handleSearchInput(newValue)
+                        }
 
                     if isSearching {
                         Button("Cancel") {
@@ -35,69 +37,72 @@ struct MovieListView: View {
                 }
                 .padding(.top, 10)
 
-                // MARK: - Content
+                // MARK: - Movie List
                 Group {
-                    if isSearching {
-                        searchResultsView
+                    if viewModel.isLoading || searchViewModel.isLoading {
+                        ProgressView("Loading Movies...")
+                    } else if let error = viewModel.errorMessage ?? searchViewModel.errorMessage {
+                        Text("Error: \(error)").foregroundColor(.red)
                     } else {
-                        movieListView
+                        List(currentMovies) { movie in
+                            NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
+                                MovieRowView(movie: movie)
+                            }
+                        }
+                        .listStyle(PlainListStyle())
                     }
                 }
             }
-            .navigationTitle(isSearching ? "Search Results" : "Popular Movies")
+            .navigationTitle("Movies")
             .onAppear {
                 viewModel.fetchMovies()
             }
         }
     }
 
-    // MARK: - Movie List View (Popular Movies)
-    private var movieListView: some View {
-        Group {
-            if viewModel.isLoading {
-                ProgressView("Loading Movies...")
-            } else if let error = viewModel.errorMessage {
-                Text("Error: \(error)").foregroundColor(.red)
+    // MARK: - Current Movies (Local or Remote)
+    private var currentMovies: [Movie] {
+        if isSearching {
+            if !localFilteredMovies.isEmpty {
+                return localFilteredMovies
+            } else if didPerformRemoteSearch {
+                return searchViewModel.movies
             } else {
-                List(viewModel.movies) { movie in
-                    NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
-                        MovieRowView(movie: movie)
-                    }
-                }
+                return []
             }
+        } else {
+            return viewModel.movies
         }
     }
 
-    // MARK: - Search Results View
-    private var searchResultsView: some View {
-        Group {
-            if searchViewModel.isLoading {
-                ProgressView("Searching Movies...")
-            } else if let error = searchViewModel.errorMessage {
-                Text("Error: \(error)").foregroundColor(.red)
-            } else if searchViewModel.movies.isEmpty {
-                Text("No results found").foregroundColor(.gray)
-            } else {
-                List(searchViewModel.movies) { movie in
-                    NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
-                        MovieRowView(movie: movie)
-                    }
-                }
-            }
+    // MARK: - Local Filtered Movies
+    private var localFilteredMovies: [Movie] {
+        viewModel.movies.filter { movie in
+            movie.title.localizedCaseInsensitiveContains(searchText)
         }
     }
 
-    // MARK: - Functions
+    // MARK: - Handle Search Input
+    private func handleSearchInput(_ input: String) {
+        isSearching = !input.isEmpty
 
-    private func performSearch() {
-        guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-        isSearching = true
-        searchViewModel.searchMovie(searchText)
+        if isSearching {
+            if localFilteredMovies.isEmpty && !didPerformRemoteSearch {
+                // Perform Remote Search if no local results
+                searchViewModel.searchMovie(input)
+                didPerformRemoteSearch = true
+            }
+        } else {
+            // Reset Search
+            cancelSearch()
+        }
     }
 
+    // MARK: - Cancel Search
     private func cancelSearch() {
         searchText = ""
         isSearching = false
+        didPerformRemoteSearch = false
         searchViewModel.movies = []
     }
 }
