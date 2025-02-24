@@ -5,6 +5,8 @@
 //  Created by Ricardo Montesinos on 23/02/25.
 //
 
+import Foundation
+
 class FetchMovieDetailUseCase {
     
     private let repository: MovieRepository

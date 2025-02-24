@@ -21,7 +21,6 @@ class MovieRepositoryImpl: MovieRepository {
         apiService.fetchPopularMovies(page: page, language: language) { result in
             switch result {
             case .success(let movieDTOs):
-                // Map MovieDTO to Movie
                 let movies = movieDTOs.map { $0.toMovie() }
                 completion(.success(movies))
             case .failure(let error):
@@ -38,6 +37,19 @@ class MovieRepositoryImpl: MovieRepository {
                 // Map MovieDTO to Movie
                 let movie = movieDTO.toMovie()
                 completion(.success(movie))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // MARK: - Search Movie
+    func searchMovie(query: String, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void) {
+        apiService.searchMovies(query: query) { result in
+            switch result {
+            case .success(let movieDTOs):
+                let movies = movieDTOs.map { $0.toMovie() }
+                completion(.success(movies))
             case .failure(let error):
                 completion(.failure(error))
             }

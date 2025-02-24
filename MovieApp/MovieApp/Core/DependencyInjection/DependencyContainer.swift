@@ -32,4 +32,9 @@ final class DependencyContainer {
         let fetchMovieDetailUseCase = FetchMovieDetailUseCase(repository: repository)
         return MovieDetailViewModel(fetchMovieDetailUseCase: fetchMovieDetailUseCase)
     }
+    
+    func makeMovieSearchViewModel() -> MovieSearchViewModel {
+        let fetchMovieSearchUseCase = SearchMovieUseCase(repository: repository)
+        return MovieSearchViewModel(searchMovieUseCase: fetchMovieSearchUseCase)
+    }
 }

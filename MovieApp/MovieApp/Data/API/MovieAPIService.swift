@@ -33,15 +33,7 @@ final class MovieAPIService {
         let url = APIEndpoints.movieDetailURL(movieID: movieID, language: language)
         fetchMovies(url: url, completion: completion)
     }
-    
-    // MARK: - Fetch Now Playing Movies
-    func fetchNowPlayingMovies(minDate: String, maxDate: String, page: Int = 1, language: APILanguage = .EN, completion: @escaping (Result<[MovieDTO], Error>) -> Void) {
-        let url = APIEndpoints.nowPlayingMoviesURL(minDate: minDate, maxDate: maxDate, page: page, language: language)
-        fetchMovies(url: url) { (result: Result<MovieListResponse, Error>) in
-            self.handleMovieListResponse(result, completion: completion)
-        }
-    }
-    
+
     // MARK: - Search Movies
     func searchMovies(query: String, page: Int = 1, language: APILanguage = .EN, completion: @escaping (Result<[MovieDTO], Error>) -> Void) {
         let url = APIEndpoints.searchMoviesURL(query: query, page: page, language: language)

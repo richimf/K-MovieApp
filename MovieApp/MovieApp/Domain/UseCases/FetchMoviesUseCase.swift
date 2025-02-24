@@ -6,7 +6,6 @@
 //
 import Foundation
 
-/// The business logic for fetching movies, which uses the repository.
 class FetchMoviesUseCase {
 
     private let repository: MovieRepository

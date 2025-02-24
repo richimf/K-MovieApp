@@ -27,24 +27,26 @@ struct APIEndpoints {
         return URL(string: "\(baseURL)/discover/movie?api_key=\(apiKey)&language=\(language.rawValue)&sort_by=popularity.desc&include_adult=false&include_video=false&page=\(page)")
     }
     
+    /// Returns the URL for fetching movie details
+    static func movieDetailURL(movieID: Int, language: APILanguage = .EN) -> URL? {
+        return URL(string: "\(baseURL)/movie/\(movieID)?language=\(language.rawValue)")
+    }
+
+    /// Returns the URL for fetching movie images
+    static func imageURL(path: String) -> URL? {
+        return URL(string: "\(imageBaseURL)\(path)")
+    }
+    
     /// Returns the URL for fetching now playing movies
     static func nowPlayingMoviesURL(minDate: String, maxDate: String, page: Int = 1, language: APILanguage = .EN) -> URL? {
         return URL(string: "\(baseURL)/discover/movie?api_key=\(apiKey)&language=\(language.rawValue)&sort_by=popularity.desc&include_adult=false&include_video=false&page=\(page)&with_release_type=2|3&release_date.gte=\(minDate)&release_date.lte=\(maxDate)")
     }
 
     /// Returns the URL for searching movies
+    ///      --url  'search/movie?query=king&include_adult=false&language=en-US&page=1' \
+
     static func searchMoviesURL(query: String, page: Int = 1, language: APILanguage = .EN) -> URL? {
         let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        return URL(string: "\(baseURL)/search/movie?api_key=\(apiKey)&query=\(encodedQuery)&page=\(page)&language=\(language.rawValue)")
+        return URL(string: "\(baseURL)/search/movie?query=\(encodedQuery)&include_adult=false&language=\(language.rawValue)&page=\(page)")
     }
-    
-    /// Returns the URL for fetching movie details
-    static func movieDetailURL(movieID: Int, language: APILanguage = .EN) -> URL? {
-        return URL(string: "\(baseURL)/movie/\(movieID)?api_key=\(apiKey)&language=\(language.rawValue)")
-    }
-
-    /// Returns the URL for fetching movie images
-    static func imageURL(path: String) -> URL? {
-        return URL(string: "\(imageBaseURL)\(path)")
-    }    
 }
