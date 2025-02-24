@@ -19,30 +19,41 @@ struct MovieListView: View {
         NavigationView {
             VStack {
                 // MARK: - Search Bar
-                HStack {
-                    TextField("Search Movies...", text: $searchText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                        .onChange(of: searchText) { newValue in
-                            handleSearchInput(newValue)
+                if !isOfflineError {
+                    HStack {
+                        TextField("Search Movies...", text: $searchText)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding(.horizontal)
+                            .onChange(of: searchText) { newValue in
+                                handleSearchInput(newValue)
+                            }
+                        
+                        if isSearching {
+                            Button("Cancel") {
+                                cancelSearch()
+                            }
+                            .foregroundColor(.blue)
+                            .padding(.trailing, 10)
                         }
-
-                    if isSearching {
-                        Button("Cancel") {
-                            cancelSearch()
-                        }
-                        .foregroundColor(.blue)
-                        .padding(.trailing, 10)
                     }
+                    .padding(.top, 10)
                 }
-                .padding(.top, 10)
-
                 // MARK: - Movie List
                 Group {
-                    if viewModel.isLoading && viewModel.movies.isEmpty {
+                    if viewModel.isLoading || searchViewModel.isLoading {
                         ProgressView("Loading Movies...")
                     } else if let error = viewModel.errorMessage ?? searchViewModel.errorMessage {
-                        Text("Error: \(error)").foregroundColor(.red)
+                        ErrorView(
+                            iconName: error.contains("offline") ? "wifi.slash" : "exclamationmark.triangle",
+                            message: error,
+                            retryAction: {
+                                if isSearching {
+                                    searchViewModel.searchMovie(searchText)
+                                } else {
+                                    viewModel.fetchMovies()
+                                }
+                            }
+                        )
                     } else {
                         List(currentMovies.indices, id: \.self) { index in
                             let movie = currentMovies[index]
@@ -50,7 +61,6 @@ struct MovieListView: View {
                                 MovieRowView(movie: movie)
                             }
                             .onAppear {
-                                // Trigger pagination when reaching the bottom
                                 if index == currentMovies.count - 1 {
                                     loadMoreMoviesIfNeeded()
                                 }
@@ -123,5 +133,11 @@ struct MovieListView: View {
         } else if didPerformRemoteSearch {
             searchViewModel.loadMoreSearchResults(query: searchText)
         }
+    }
+    
+    // MARK: - Check for Offline Error
+    private var isOfflineError: Bool {
+        let errorMessage = viewModel.errorMessage ?? searchViewModel.errorMessage ?? ""
+        return errorMessage.contains("offline") || errorMessage.contains("No Internet")
     }
 }

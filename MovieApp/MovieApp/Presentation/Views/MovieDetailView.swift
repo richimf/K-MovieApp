@@ -24,7 +24,7 @@ struct MovieDetailView: View {
             .onAppear {
                 viewModel.fetchMovieDetail(movieID: movieID)
             }
-            .navigationTitle(viewModel.movie?.title ?? "Loading...")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -34,10 +34,13 @@ struct MovieDetailView: View {
             ProgressView("Loading Movie Details...")
                 .progressViewStyle(CircularProgressViewStyle())
         } else if let errorMessage = viewModel.errorMessage {
-            Text("Error: \(errorMessage)")
-                .foregroundColor(.red)
-                .multilineTextAlignment(.center)
-                .padding()
+            ErrorView(
+                iconName: isOfflineError ? "wifi.slash" : "exclamationmark.triangle",
+                message: errorMessage,
+                retryAction: {
+                    viewModel.fetchMovieDetail(movieID: movieID)
+                }
+            )
         } else if let movie = viewModel.movie {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
@@ -61,8 +64,8 @@ struct MovieDetailView: View {
                         .foregroundColor(.secondary)
 
                     Text(overviewText(for: movie.overview))
-                            .font(.body)
-                            .padding(.top, 8)
+                        .font(.body)
+                        .padding(.top, 8)
 
                     Spacer()
                 }
@@ -73,11 +76,29 @@ struct MovieDetailView: View {
                 .foregroundColor(.gray)
         }
     }
-    
+
+    // MARK: - Dynamic Navigation Title
+    private var navigationTitle: String {
+        if let errorMessage = viewModel.errorMessage, isOfflineError {
+            return "No Internet Connection"
+        } else if let movieTitle = viewModel.movie?.title {
+            return movieTitle
+        } else {
+            return "Loading..."
+        }
+    }
+
+    // MARK: - Overview Handling
     private func overviewText(for overview: String?) -> String {
         guard let overview = overview, !overview.isEmpty else {
             return "No overview available."
         }
         return "\(overview)"
+    }
+
+    // MARK: - Check for Offline Error
+    private var isOfflineError: Bool {
+        let errorMessage = viewModel.errorMessage?.lowercased() ?? ""
+        return errorMessage.contains("offline") || errorMessage.contains("no internet")
     }
 }

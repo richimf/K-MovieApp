@@ -4,7 +4,6 @@
 //
 //  Created by Ricardo Montesinos on 23/02/25.
 //
-
 import SwiftUI
 
 class MovieListViewModel: ObservableObject {
@@ -39,7 +38,7 @@ class MovieListViewModel: ObservableObject {
                     self.movies = movies
                     self.canLoadMore = !movies.isEmpty
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    self.errorMessage = self.parseError(error)
                 }
             }
         }
@@ -61,9 +60,25 @@ class MovieListViewModel: ObservableObject {
                     self.movies.append(contentsOf: movies)
                     self.canLoadMore = !movies.isEmpty
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+                    self.errorMessage = self.parseError(error)
                 }
             }
         }
+    }
+
+    // MARK: - Parse Error for UI
+    private func parseError(_ error: Error) -> String {
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain {
+            switch nsError.code {
+            case NSURLErrorNotConnectedToInternet:
+                return "You appear to be offline. Please check your connection."
+            case NSURLErrorTimedOut:
+                return "The request timed out. Please try again."
+            default:
+                return "An unexpected network error occurred."
+            }
+        }
+        return error.localizedDescription
     }
 }
