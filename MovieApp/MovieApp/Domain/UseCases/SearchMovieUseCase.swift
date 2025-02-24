@@ -15,7 +15,7 @@ class SearchMovieUseCase {
         self.repository = repository
     }
 
-    func searchMovie(query: String, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void) {
-        repository.searchMovie(query: query, language: language, completion: completion)
+    func searchMovie(query: String, page: Int, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void) {
+        repository.searchMovie(query: query, page: page, language: language, completion: completion)
     }
 }

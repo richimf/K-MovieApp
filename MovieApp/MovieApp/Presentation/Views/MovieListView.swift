@@ -39,17 +39,29 @@ struct MovieListView: View {
 
                 // MARK: - Movie List
                 Group {
-                    if viewModel.isLoading || searchViewModel.isLoading {
+                    if viewModel.isLoading && viewModel.movies.isEmpty {
                         ProgressView("Loading Movies...")
                     } else if let error = viewModel.errorMessage ?? searchViewModel.errorMessage {
                         Text("Error: \(error)").foregroundColor(.red)
                     } else {
-                        List(currentMovies) { movie in
+                        List(currentMovies.indices, id: \.self) { index in
+                            let movie = currentMovies[index]
                             NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
                                 MovieRowView(movie: movie)
                             }
+                            .onAppear {
+                                // Trigger pagination when reaching the bottom
+                                if index == currentMovies.count - 1 {
+                                    loadMoreMoviesIfNeeded()
+                                }
+                            }
                         }
                         .listStyle(PlainListStyle())
+
+                        if viewModel.isPaginating {
+                            ProgressView("Loading more movies...")
+                                .padding()
+                        }
                     }
                 }
             }
@@ -88,12 +100,10 @@ struct MovieListView: View {
 
         if isSearching {
             if localFilteredMovies.isEmpty && !didPerformRemoteSearch {
-                // Perform Remote Search if no local results
                 searchViewModel.searchMovie(input)
                 didPerformRemoteSearch = true
             }
         } else {
-            // Reset Search
             cancelSearch()
         }
     }
@@ -104,5 +114,14 @@ struct MovieListView: View {
         isSearching = false
         didPerformRemoteSearch = false
         searchViewModel.movies = []
+    }
+
+    // MARK: - Pagination Trigger
+    private func loadMoreMoviesIfNeeded() {
+        if !isSearching {
+            viewModel.loadMoreMovies()
+        } else if didPerformRemoteSearch {
+            searchViewModel.loadMoreSearchResults(query: searchText)
+        }
     }
 }

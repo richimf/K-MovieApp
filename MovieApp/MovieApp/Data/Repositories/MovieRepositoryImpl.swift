@@ -44,8 +44,8 @@ class MovieRepositoryImpl: MovieRepository {
     }
     
     // MARK: - Search Movie
-    func searchMovie(query: String, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void) {
-        apiService.searchMovies(query: query) { result in
+    func searchMovie(query: String, page: Int, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void) {
+        apiService.searchMovies(query: query, page: page) { result in
             switch result {
             case .success(let movieDTOs):
                 let movies = movieDTOs.map { $0.toMovie() }
