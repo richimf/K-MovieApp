@@ -95,3 +95,10 @@ Each ticket has a prefix that stands the following:
 
 Link to the board:
 https://github.com/users/richimf/projects/1/views/1
+
+
+### Link for downloading the app:
+https://i.diawi.com/gYYRkg
+
+### Release branch
+``` release/1.0.0```
