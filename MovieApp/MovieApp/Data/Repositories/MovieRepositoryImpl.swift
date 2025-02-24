@@ -18,9 +18,7 @@ class MovieRepositoryImpl: MovieRepository {
 
     // MARK: - Fetch Movies
     func fetchMovies(page: Int, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void) {
-        apiService.fetchPopularMovies(page: page, language: language) { [weak self] result in
-            guard let self = self else { return }
-
+        apiService.fetchPopularMovies(page: page, language: language) { result in
             switch result {
             case .success(let movieDTOs):
                 // Map MovieDTO to Movie
