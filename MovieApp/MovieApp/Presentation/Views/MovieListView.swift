@@ -25,6 +25,8 @@ struct MovieListView: View {
                         TextField("Search Movies...", text: $searchText)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .padding(.horizontal)
+                            .autocorrectionDisabled(true)
+                            .textInputAutocapitalization(.never)
                             .onChange(of: searchText) { newValue in
                                 handleSearchInput(newValue)
                             }
