@@ -4,6 +4,7 @@
 //
 //  Created by Ricardo Montesinos on 23/02/25.
 //
+import Foundation
 
 /// The business logic for fetching movies, which uses the repository.
 class FetchMoviesUseCase {
@@ -14,7 +15,8 @@ class FetchMoviesUseCase {
         self.repository = repository
     }
 
-    func execute(page: Int, language: String, completion: @escaping (Result<[Movie], Error>) -> Void) {
+    /// Executes fetching of movies using APILanguage enum
+    func execute(page: Int, language: APILanguage = .EN, completion: @escaping (Result<[Movie], Error>) -> Void) {
         repository.fetchMovies(page: page, language: language, completion: completion)
     }
 }

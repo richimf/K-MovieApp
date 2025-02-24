@@ -6,6 +6,6 @@
 //
 
 protocol MovieRepository {
-    func fetchMovies(page: Int, language: String, completion: @escaping (Result<[Movie], Error>) -> Void)
-    func fetchMovieDetail(movieID: Int, language: String, completion: @escaping (Result<Movie, Error>) -> Void)
+    func fetchMovies(page: Int, language: APILanguage, completion: @escaping (Result<[Movie], Error>) -> Void)
+    func fetchMovieDetail(movieID: Int, language: APILanguage, completion: @escaping (Result<Movie, Error>) -> Void)
 }
